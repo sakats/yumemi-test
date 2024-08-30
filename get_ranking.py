@@ -12,34 +12,34 @@ def check_import_file(entry_log_path: str, score_log_path: str):
     # TODO:入力ファイルの形式チェック
     pass
 
-def get_entry_data(entry_log_path: str) -> list[str]:
+def get_entry_data(entry_log_path: str) -> list[list[str]]:
     """CSVファイルを配列データに加工
     """
-    entry_data = []
-    with open(entry_log_path) as file:
-        next(csv.reader(file))
-        entry_data = list(csv.reader(file))
+    entry_data = {}
+    with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
+        next(csv.reader(entry_file))
+        entry_data = list(csv.reader(entry_file))
     return entry_data
 
-def get_score_data(score_log_path: str, entry_data: str) -> list[str]:
+def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[list[str]]:
     """CSVファイルを配列データに加工
     """
     pass
 
-def sort_score_data(score_data: list[str]) -> list[str]:
+def sort_score_data(score_data: list[list[str]]) -> list[list[str]]:
     """データをランキング形式にソートする
 
     Args:
-        score_data (list[str]): _description_
+        score_data (list[list[str]]): _description_
     """
     pass
 
-def extract_ranking_data(entry_data: list[str], score_data: list[str]) -> list[str]:
+def extract_ranking_data(entry_data: list[list[str]], score_data: list[list[str]]) -> list[list[str]]:
     """ランキングデータを上位10位以内の形式に加工する
 
     Args:
-        entry_data (list[str]): _description_
-        score_data (list[str]): _description_
+        entry_data (list[list[str]]): _description_
+        score_data (list[list[str]]): _description_
     """
     pass
 
