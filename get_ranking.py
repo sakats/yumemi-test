@@ -1,5 +1,6 @@
 import os
 import sys
+import csv
 
 def check_import_file(entry_log_path: str, score_log_path: str):
     """ログファイルの仕様と入力ファイルに差異がないか確認
@@ -11,12 +12,16 @@ def check_import_file(entry_log_path: str, score_log_path: str):
     # TODO:入力ファイルの形式チェック
     pass
 
-def get_entry_data(ENTRY_LOG_PATH: str) -> list[str]:
+def get_entry_data(entry_log_path: str) -> list[str]:
     """CSVファイルを配列データに加工
     """
-    pass
+    entry_data = []
+    with open(entry_log_path) as file:
+        next(csv.reader(file))
+        entry_data = list(csv.reader(file))
+    return entry_data
 
-def get_score_data(SCORE_LOG_PATH: str, entry_data: str) -> list[str]:
+def get_score_data(score_log_path: str, entry_data: str) -> list[str]:
     """CSVファイルを配列データに加工
     """
     pass
@@ -46,15 +51,18 @@ def output_ranking_data(ranking_data: str):
     """
     pass
 
-def main(ENTRY_LOG_PATH: str, SCORE_LOG_PATH: str):
+def main(entry_log_path: str, score_log_path: str):
     # 入力ファイルの存在確認
-    if not os.path.exists(ENTRY_LOG_PATH) or not os.path.exists(ENTRY_LOG_PATH):
-        print("入力ファイルが存在しません。", file=sys.stderr)
+    if not os.path.exists(entry_log_path):
+        print("ゲームのエントリーファイルが存在しません。", file=sys.stderr)
         sys.exit(1)
-    
-    check_import_file(ENTRY_LOG_PATH, SCORE_LOG_PATH)
-    entry_data = get_entry_data(ENTRY_LOG_PATH)
-    score_data = get_score_data(SCORE_LOG_PATH, entry_data)
+    if not os.path.exists(score_log_path):
+        print("ゲームのプレイログファイルが存在しません。", file=sys.stderr)
+        sys.exit(1)
+
+    check_import_file(entry_log_path, score_log_path)
+    entry_data = get_entry_data(entry_log_path)
+    score_data = get_score_data(score_log_path, entry_data)
     score_data = sort_score_data(score_data)
     ranking_data = extract_ranking_data(entry_data, score_data)
     output_ranking_data(ranking_data)
