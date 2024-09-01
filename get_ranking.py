@@ -23,8 +23,8 @@ def get_entry_data(entry_log_path: str) -> list[list[str]]:
 def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[list[str]]:
     """CSVファイルを配列データに加工
     """
-    # エントリーデータからプレイヤ―IDを抽出
     score_data=[]
+    # エントリーデータからプレイヤ―IDを抽出
     entry_player_id = [row[0] for row in entry_data]
     
     with open(score_log_path, mode="r", encoding="utf-8") as score_file:
@@ -33,6 +33,7 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
         for row in csv_reader:
             if row[1] not in entry_player_id:
                 continue
+            "TODO:スコア比較処理を追記する。score_dataにデータが存在しない or スコアが大きい場合、という条件で更新"
             score_data.append(row)
     return score_data
 
@@ -42,7 +43,7 @@ def sort_score_data(score_data: list[list[str]]) -> list[list[str]]:
     Args:
         score_data (list[list[str]]): _description_
     """
-    pass
+    return sorted(score_data, key=lambda row: (row[1],row[2]))
 
 def extract_ranking_data(entry_data: list[list[str]], score_data: list[list[str]]) -> list[list[str]]:
     """ランキングデータを上位10位以内の形式に加工する
@@ -72,9 +73,7 @@ def main(entry_log_path: str, score_log_path: str):
 
     check_import_file(entry_log_path, score_log_path)
     entry_data = get_entry_data(entry_log_path)
-    print(entry_data)
     score_data = get_score_data(score_log_path, entry_data)
-    print(score_data)
     score_data = sort_score_data(score_data)
     ranking_data = extract_ranking_data(entry_data, score_data)
     output_ranking_data(ranking_data)
