@@ -31,17 +31,16 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
         csv_reader = csv.reader(score_file)
         next(csv_reader)
         for row in csv_reader:
-            # エントリ―データにプレイヤーIDがなければ記録しない
             player_id = row[1]
             game_score = row[2]
+            # エントリ―データにプレイヤーIDがなければ記録しない
             if player_id not in entry_player_id:
                 continue
-            
             # 既存のスコアがあれば比較して更新、なければ追加する
             for score in score_data:
                 now_game_score = score[2]
                 if player_id in score: 
-                    if game_score > now_game_score:
+                    if int(game_score) > int(now_game_score):
                         score_data.remove(score)
                         score_data.append(row)
                         break
@@ -52,12 +51,16 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
     return score_data
 
 def sort_score_data(score_data: list[list[str]]) -> list[list[str]]:
-    """データをスコア降順にソートする
+    """データをスコア降順、記録時間昇順にソートする
 
     Args:
-        score_data (list[list[str]]): _description_
+        score_data (list[list[str]]): スコアリスト
+
+    Returns:
+        list[list[str]]: ソート後のスコアリスト
     """
-    return sorted(score_data, key=lambda row: (row[1],row[2]))
+    # TODO:要件に合致したソート方法になっているか確認。現時点ではスコア同順は時間を優先。
+    return sorted(score_data, key=lambda row: (-int(row[2]),row[0]))
 
 def extract_ranking_data(entry_data: list[list[str]], score_data: list[list[str]]) -> list[list[str]]:
     """ランキングデータを上位10位以内の形式に加工する
