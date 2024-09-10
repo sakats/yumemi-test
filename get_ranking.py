@@ -31,14 +31,28 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
         csv_reader = csv.reader(score_file)
         next(csv_reader)
         for row in csv_reader:
-            if row[1] not in entry_player_id:
+            # エントリ―データにプレイヤーIDがなければ記録しない
+            player_id = row[1]
+            game_score = row[2]
+            if player_id not in entry_player_id:
                 continue
-            "TODO:スコア比較処理を追記する。score_dataにデータが存在しない or スコアが大きい場合、という条件で更新"
-            score_data.append(row)
+            
+            # 既存のスコアがあれば比較して更新、なければ追加する
+            for score in score_data:
+                now_game_score = score[2]
+                if player_id in score: 
+                    if game_score > now_game_score:
+                        score_data.remove(score)
+                        score_data.append(row)
+                        break
+                    else:
+                        break
+            else:
+                score_data.append(row)
     return score_data
 
 def sort_score_data(score_data: list[list[str]]) -> list[list[str]]:
-    """データをランキング形式にソートする
+    """データをスコア降順にソートする
 
     Args:
         score_data (list[list[str]]): _description_
@@ -75,6 +89,7 @@ def main(entry_log_path: str, score_log_path: str):
     entry_data = get_entry_data(entry_log_path)
     score_data = get_score_data(score_log_path, entry_data)
     score_data = sort_score_data(score_data)
+    print(score_data)
     ranking_data = extract_ranking_data(entry_data, score_data)
     output_ranking_data(ranking_data)
 
