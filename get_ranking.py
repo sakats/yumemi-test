@@ -77,7 +77,8 @@ def output_ranking_data(ranking_data: str):
     Args:
         ranking_data (str): _description_
     """
-    pass
+    for data in ranking_data:
+        print(data)
 
 def main(entry_log_path: str, score_log_path: str):
     # 入力ファイルの存在確認
@@ -86,6 +87,14 @@ def main(entry_log_path: str, score_log_path: str):
         sys.exit(1)
     if not os.path.exists(score_log_path):
         print("ゲームのプレイログファイルが存在しません。", file=sys.stderr)
+        sys.exit(1)
+
+    # 入力ファイルの名前確認
+    if os.path.basename(entry_log_path) != "game_entry_log.csv":
+        print("エントリーファイルのファイル名または拡張子が異なります")
+        sys.exit(1)
+    if os.path.basename(score_log_path) != "game_score_log.csv":
+        print("プレイログファイルのファイル名または拡張子が異なります")
         sys.exit(1)
 
     check_import_file(entry_log_path, score_log_path)
