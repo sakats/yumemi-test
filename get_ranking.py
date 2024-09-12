@@ -1,6 +1,7 @@
+import csv
 import os
 import sys
-import csv
+from typing import List, Dict
 
 def check_import_file(entry_log_path: str, score_log_path: str):
     """ログファイルの仕様と入力ファイルに差異がないか確認
@@ -12,29 +13,34 @@ def check_import_file(entry_log_path: str, score_log_path: str):
     # TODO:入力ファイルの形式チェック
     pass
 
-def get_entry_data(entry_log_path: str) -> list[list[str]]:
-    """エントリーファイルを配列に格納
+def get_entry_data(entry_log_path: str) -> Dict[str,str]:
+    """エントリーファイルを辞書に格納
 
     Args:
         entry_log_path (str): エントリーファイルパス
 
     Returns:
-        list[list[str]]: エントリーデータ
+        Dict[str,str]: エントリーデータ
     """
+    entry_data = {}
     with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
-        next(csv.reader(entry_file))
-        entry_data = list(csv.reader(entry_file))
+        csv_reader = csv.reader(entry_file)
+        next(csv_reader)
+        for row in csv_reader:
+            player_id = row[0]
+            handle_name = row[1]
+            entry_data[player_id] = handle_name
     return entry_data
 
-def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[list[str]]:
+def get_score_data(score_log_path: str, entry_data: List[List[str]]) -> List[List[str]]:
     """スコアファイルを配列に格納
 
     Args:
         score_log_path (str): スコアファイルパス
-        entry_data (list[list[str]]): エントリーデータ
+        entry_data (List[List[str]]): エントリーデータ
 
     Returns:
-        list[list[str]]: スコアデータ
+        List[List[str]]: スコアデータ
     """
     score_data=[]
     # エントリーデータからプレイヤ―IDを抽出
@@ -45,15 +51,15 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
         next(csv_reader)
         for row in csv_reader:
             player_id = row[1]
-            game_score = row[2]
+            game_score = int(row[2])
             # エントリ―データにプレイヤーIDがなければ記録しない
             if player_id not in entry_player_id:
                 continue
             # 既存のスコアがあれば比較して更新、なければ追加する
             for score in score_data:
-                now_game_score = score[2]
+                now_game_score = int(score[2])
                 if player_id in score: 
-                    if int(game_score) > int(now_game_score):
+                    if game_score > now_game_score:
                         score_data.remove(score)
                         score_data.append(row)
                         break
@@ -63,27 +69,27 @@ def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[lis
                 score_data.append(row)
     return score_data
 
-def sort_score_data(score_data: list[list[str]]) -> list[list[str]]:
+def sort_score_data(score_data: List[List[str]]) -> List[List[str]]:
     """データをスコア降順、記録時間昇順にソートする
 
     Args:
-        score_data (list[list[str]]): スコアリスト
+        score_data (List[List[str]]): スコアリスト
 
     Returns:
-        list[list[str]]: ソート後のスコアリスト
+        List[List[str]]: ソート後のスコアリスト
     """
     # TODO:要件に合致したソート方法になっているか確認。現時点ではスコア同順は時間を優先。
     return sorted(score_data, key=lambda row: (-int(row[2]),row[0]))
 
-def extract_ranking_data(entry_data: list[list[str]], score_data: list[list[str]]) -> list[list[str]]:
+def extract_ranking_data(entry_data: List[List[str]], score_data: List[List[str]]) -> List[List[str]]:
     """ランキングデータを上位10位以内の形式に加工する
 
     Args:
-        entry_data (list[list[str]]): エントリーデータ
-        score_data (list[list[str]]): スコアデータ
+        entry_data (List[List[str]]): エントリーデータ
+        score_data (List[List[str]]): スコアデータ
 
     Returns:
-        list[list[str]]: ランキングデータ
+        List[List[str]]: ランキングデータ
     """
     pass
 
@@ -97,6 +103,10 @@ def output_ranking_data(ranking_data: str):
         print(data)
 
 def main(entry_log_path: str, score_log_path: str):
+    entry_log_header = "player_id,handle_name"
+    score_log_header = "create_timestamp,player_id,score"
+    ranking_data_header = "rank,player_id,handle_name,score"
+
     # 入力ファイルの存在確認
     if not os.path.exists(entry_log_path):
         print("ゲームのエントリーファイルが存在しません。", file=sys.stderr)
@@ -127,7 +137,7 @@ if __name__ == "__main__":
         print("入力引数の数が不正です。", file=sys.stderr)
         sys.exit(1)
 
-    ENTRY_LOG_PATH = sys.argv[1]
-    SCORE_LOG_PATH = sys.argv[2]
+    entry_log_path = sys.argv[1]
+    score_log_path = sys.argv[2]
 
-    main(ENTRY_LOG_PATH,SCORE_LOG_PATH)
+    main(entry_log_path,score_log_path)
