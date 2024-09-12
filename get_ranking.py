@@ -13,7 +13,7 @@ def check_import_file(entry_log_path: str, score_log_path: str):
     # TODO:入力ファイルの形式チェック
     pass
 
-def get_entry_data(entry_log_path: str) -> Dict[str,str]:
+def generate_entry_data(entry_log_path: str) -> Dict[str,str]:
     """エントリーファイルを辞書に格納
 
     Args:
@@ -32,41 +32,33 @@ def get_entry_data(entry_log_path: str) -> Dict[str,str]:
             entry_data[player_id] = handle_name
     return entry_data
 
-def get_score_data(score_log_path: str, entry_data: List[List[str]]) -> List[List[str]]:
+def generate_score_data(score_log_path: str, entry_data: Dict[str,str]) -> Dict[str,List[str]]:
     """スコアファイルを配列に格納
 
     Args:
         score_log_path (str): スコアファイルパス
-        entry_data (List[List[str]]): エントリーデータ
+        entry_data (Dict[str,str]): エントリーデータ
 
     Returns:
-        List[List[str]]: スコアデータ
+        Dict[str,List[str]]: スコアデータ
     """
-    score_data=[]
-    # エントリーデータからプレイヤ―IDを抽出
-    entry_player_id = [row[0] for row in entry_data]
-    
+    score_data = {}
     with open(score_log_path, mode="r", encoding="utf-8") as score_file:
         csv_reader = csv.reader(score_file)
         next(csv_reader)
         for row in csv_reader:
+            create_timestamp = row[0]
             player_id = row[1]
             game_score = int(row[2])
-            # エントリ―データにプレイヤーIDがなければ記録しない
-            if player_id not in entry_player_id:
+            # エントリ―データにプレイヤーIDがなければ記録しない。
+            if player_id not in entry_data.keys():
                 continue
-            # 既存のスコアがあれば比較して更新、なければ追加する
+            # 既にスコアがあれば比較･更新し、無ければ追加する。
             for score in score_data:
-                now_game_score = int(score[2])
-                if player_id in score: 
-                    if game_score > now_game_score:
-                        score_data.remove(score)
-                        score_data.append(row)
-                        break
-                    else:
-                        break
-            else:
-                score_data.append(row)
+                best_score = int(score[2])
+                if player_id in score and (player_id not in score_data.keys() or game_score > best_score):
+                    score_data[player_id] = [create_timestamp,game_score]
+                    break
     return score_data
 
 def sort_score_data(score_data: List[List[str]]) -> List[List[str]]:
@@ -124,8 +116,8 @@ def main(entry_log_path: str, score_log_path: str):
         sys.exit(1)
 
     check_import_file(entry_log_path, score_log_path)
-    entry_data = get_entry_data(entry_log_path)
-    score_data = get_score_data(score_log_path, entry_data)
+    entry_data = generate_entry_data(entry_log_path)
+    score_data = generate_score_data(score_log_path, entry_data)
     score_data = sort_score_data(score_data)
     print(score_data)
     ranking_data = extract_ranking_data(entry_data, score_data)
