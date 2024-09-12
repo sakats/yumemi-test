@@ -3,6 +3,7 @@ import os
 import sys
 from typing import List, Dict
 
+
 def check_import_file(entry_log_path: str, score_log_path: str):
     """ログファイルの仕様と入力ファイルに差異がないか確認
 
@@ -11,9 +12,11 @@ def check_import_file(entry_log_path: str, score_log_path: str):
         game_score_log_path (str): _description_
     """
     # TODO:入力ファイルの形式チェック
+    # TODO:関数をファイル別の処理に分ける
     pass
 
-def generate_entry_data(entry_log_path: str) -> Dict[str,str]:
+
+def generate_entry_data(entry_log_path: str) -> Dict[str, str]:
     """エントリーファイルを辞書に格納
 
     Args:
@@ -23,16 +26,24 @@ def generate_entry_data(entry_log_path: str) -> Dict[str,str]:
         Dict[str,str]: エントリーデータ
     """
     entry_data = {}
+
+    # エントリーファイルを開く
     with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
         csv_reader = csv.reader(entry_file)
-        next(csv_reader)
+        next(csv_reader) # ヘッダーをスキップ
+
+        # 各行を辞書に格納
         for row in csv_reader:
             player_id = row[0]
             handle_name = row[1]
             entry_data[player_id] = handle_name
+    
     return entry_data
 
-def generate_score_data(score_log_path: str, entry_data: Dict[str,str]) -> Dict[str,List[str]]:
+
+def generate_score_data(
+    score_log_path: str, entry_data: Dict[str, str]
+) -> Dict[str, List[str]]:
     """スコアファイルを配列に格納
 
     Args:
@@ -54,45 +65,73 @@ def generate_score_data(score_log_path: str, entry_data: Dict[str,str]) -> Dict[
             if player_id not in entry_data.keys():
                 continue
             # 既にスコアがあれば比較･更新し、無ければ追加する。
+            # TODO:ここはFORを使わずとも、キーの検索などで実装できそう
             for score in score_data:
                 best_score = int(score[2])
-                if player_id in score and (player_id not in score_data.keys() or game_score > best_score):
-                    score_data[player_id] = [create_timestamp,game_score]
+                if player_id in score and (
+                    player_id not in score_data.keys() or game_score > best_score
+                ):
+                    score_data[player_id] = [create_timestamp, game_score]
                     break
     return score_data
 
-def sort_score_data(score_data: List[List[str]]) -> List[List[str]]:
+
+def sort_score_data(score_data: Dict[str, List[str]]) -> Dict[str, List[str]]:
     """データをスコア降順、記録時間昇順にソートする
 
     Args:
-        score_data (List[List[str]]): スコアリスト
+        score_data (Dict[str,List[str]]): スコアリスト
 
     Returns:
-        List[List[str]]: ソート後のスコアリスト
+        Dict[str,List[str]]: ソート後のスコアリスト
     """
-    # TODO:要件に合致したソート方法になっているか確認。現時点ではスコア同順は時間を優先。
-    return sorted(score_data, key=lambda row: (-int(row[2]),row[0]))
+    # TODO:Dictをスコア降順、ID昇順で並び替えする
+    return sorted(score_data, key=lambda row: (-int(row[2]), row[0]))
 
-def extract_ranking_data(entry_data: List[List[str]], score_data: List[List[str]]) -> List[List[str]]:
+
+def extract_ranking_data(
+entry_data: Dict[str, str], score_data: Dict[str, List[str]]
+) -> Dict[str, List[str]]:
     """ランキングデータを上位10位以内の形式に加工する
 
     Args:
-        entry_data (List[List[str]]): エントリーデータ
-        score_data (List[List[str]]): スコアデータ
+        entry_data (Dict[str,str]): エントリーデータ
+        score_data (Dict[str,List[str]]): スコアデータ
 
     Returns:
-        List[List[str]]: ランキングデータ
+        Dict[str,List[str]]: ランキングデータ
     """
-    pass
+    ranking_data = {}
+    rank = 0
+    prev_score = None
 
-def output_ranking_data(ranking_data: str):
+    # ループのさせ方が違う、要素は今のとこID[タイム,スコア]なのでとり方が異なる
+    for player_id, score in score_data.items():
+        if player_id not in entry_data:
+            continue
+
+        rank += 1
+        if score != prev_score:
+            print_rank = rank
+
+        if print_rank > 10:
+            break
+
+        ranking_data[rank] = [print_rank, player_id, entry_data[player_id], score]
+        prev_score = score
+
+    return ranking_data
+
+
+def output_ranking_data(ranking_data: Dict[str, List[str]]):
     """結果を標準出力
 
     Args:
-        ranking_data (str): ランキングデータ
+        ranking_data (Dict[str,List[str]]): ランキングデータ
     """
     for data in ranking_data:
         print(data)
+
 
 def main(entry_log_path: str, score_log_path: str):
     entry_log_header = "player_id,handle_name"
@@ -123,6 +162,7 @@ def main(entry_log_path: str, score_log_path: str):
     ranking_data = extract_ranking_data(entry_data, score_data)
     output_ranking_data(ranking_data)
 
+
 if __name__ == "__main__":
     # 引数の数が2個ではない場合はエラー出力
     if len(sys.argv) != 3:
@@ -132,4 +172,4 @@ if __name__ == "__main__":
     entry_log_path = sys.argv[1]
     score_log_path = sys.argv[2]
 
-    main(entry_log_path,score_log_path)
+    main(entry_log_path, score_log_path)
