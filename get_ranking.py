@@ -13,7 +13,13 @@ def check_import_file(entry_log_path: str, score_log_path: str):
     pass
 
 def get_entry_data(entry_log_path: str) -> list[list[str]]:
-    """CSVファイルを配列データに加工
+    """エントリーファイルを配列に格納
+
+    Args:
+        entry_log_path (str): エントリーファイルパス
+
+    Returns:
+        list[list[str]]: エントリーデータ
     """
     with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
         next(csv.reader(entry_file))
@@ -21,7 +27,14 @@ def get_entry_data(entry_log_path: str) -> list[list[str]]:
     return entry_data
 
 def get_score_data(score_log_path: str, entry_data: list[list[str]]) -> list[list[str]]:
-    """CSVファイルを配列データに加工
+    """スコアファイルを配列に格納
+
+    Args:
+        score_log_path (str): スコアファイルパス
+        entry_data (list[list[str]]): エントリーデータ
+
+    Returns:
+        list[list[str]]: スコアデータ
     """
     score_data=[]
     # エントリーデータからプレイヤ―IDを抽出
@@ -66,8 +79,11 @@ def extract_ranking_data(entry_data: list[list[str]], score_data: list[list[str]
     """ランキングデータを上位10位以内の形式に加工する
 
     Args:
-        entry_data (list[list[str]]): _description_
-        score_data (list[list[str]]): _description_
+        entry_data (list[list[str]]): エントリーデータ
+        score_data (list[list[str]]): スコアデータ
+
+    Returns:
+        list[list[str]]: ランキングデータ
     """
     pass
 
@@ -75,7 +91,7 @@ def output_ranking_data(ranking_data: str):
     """結果を標準出力
 
     Args:
-        ranking_data (str): _description_
+        ranking_data (str): ランキングデータ
     """
     for data in ranking_data:
         print(data)
