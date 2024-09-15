@@ -63,15 +63,17 @@ def validate_score_log(score_log_path: str, score_log_header: str) -> bool:
             if len(row) != len(headers):
                 print("要素数が正しくありません。", file=sys.stderr)
                 return False
-            
-            #タイムスタンプが正しいか確認
+
+            # タイムスタンプが正しいか確認
             create_timestamp = row[0]
             try:
                 datetime.strptime(create_timestamp, "%Y-%m-%d %H:%M:%S")
             except ValueError:
-                print(f"不正なタイムスタンプ{create_timestamp}が含まれています。", file=sys.stderr)
+                print(
+                    f"不正なタイムスタンプ{create_timestamp}が含まれています。",
+                    file=sys.stderr,
+                )
                 return False
-
 
     return True
 
@@ -104,7 +106,7 @@ def generate_entry_data(entry_log_path: str) -> Dict[str, str]:
 def generate_score_data(
     score_log_path: str, entry_data: Dict[str, str]
 ) -> Dict[str, List[str]]:
-    """プレイログファイルを配列に格納
+    """プレイログファイルを辞書に格納
 
     Args:
         score_log_path (str): プレイログファイルパス
@@ -117,8 +119,9 @@ def generate_score_data(
 
     with open(score_log_path, mode="r", encoding="utf-8") as score_file:
         csv_reader = csv.reader(score_file)
-        next(csv_reader)
+        next(csv_reader)  # ヘッダーをスキップ
 
+        # 各行を辞書に格納
         for row in csv_reader:
             create_timestamp = row[0]
             player_id = row[1]
@@ -184,6 +187,7 @@ def extract_ranking_data(
         if print_rank > ranking_threshold:
             break
 
+        # ランキングデータ配列に格納
         ranking_data.append([print_rank, player_id, entry_data[player_id], score])
         previous_score = score
 
@@ -191,7 +195,7 @@ def extract_ranking_data(
 
 
 def output_ranking_data(ranking_data: Dict[str, List[str]]):
-    """結果を標準出力
+    """ランキングデータを標準出力
 
     Args:
         ranking_data (Dict[str,List[str]]): ランキングデータ
@@ -205,14 +209,21 @@ def main(entry_log_path: str, score_log_path: str):
     score_log_header = "create_timestamp,player_id,score"
     RANKING_THRESHOLD = 10
 
+    # 入力ファイルのバリデーションチェック
     if not validate_entry_log(entry_log_path, entry_log_header):
         sys.exit(1)
     if not validate_score_log(score_log_path, score_log_header):
         sys.exit(1)
+
+    # ファイルを辞書に格納
     entry_data = generate_entry_data(entry_log_path)
     score_data = generate_score_data(score_log_path, entry_data)
+
+    # ランキングデータ作成
     score_data = sort_score_data(score_data)
     ranking_data = extract_ranking_data(entry_data, score_data, RANKING_THRESHOLD)
+
+    # ランキングデータ出力
     output_ranking_data(ranking_data)
 
 
