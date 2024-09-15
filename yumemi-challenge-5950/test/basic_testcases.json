@@ -1,0 +1,69 @@
+[
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/unique_10_user.unique_score.csv",
+    "output": "out/basic/pre_100-unique_10.unique_score.csv",
+    "description": "[正常系] entryで全て事前登録あり、重複順位なしを出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/unique_5_user.unique_score.csv",
+    "output": "out/basic/pre_100-unique_5.unique_score.csv",
+    "description": "[正常系] entryで全て事前登録ありだが、プレイログが10件に満たない場合に正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/unique_10_user.score.csv",
+    "output": "out/basic/pre_100-unique_10.score.csv",
+    "description": "[正常系] entryで全て事前登録ありだが、重複する順位がある場合に正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/unique_10_user.not_sorted_score.csv",
+    "output": "out/basic/pre_100-unique_10.not_sorted.score.csv",
+    "description": "[正常系] entryで全て事前登録ありだが、重複する順位がある場合にplayer_idでソートして正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/unique_20_user.not_sorted_score.csv",
+    "output": "out/basic/pre_100-unique_20.not_sorted.score.csv",
+    "description": "[正常系] entryで全て事前登録ありだが、重複する順位が多い場合に10件をこえて正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_100.entry.csv test/in/basic/20_user.not_sorted_score.csv",
+    "output": "out/basic/pre_100-20.not_sorted.score.csv",
+    "description": "[正常系] entryで全て事前登録ありだが、複数のプレイログがある場合に最高得点のランキングを正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_10.entry.csv test/in/basic/unique_20_user.not_sorted_score.csv",
+    "output": "out/basic/pre_10-unique_20.not_sorted.score.csv",
+    "description": "[正常系] entryしていないユーザーのデータを除外しているか"
+  },
+  {
+    "input": "test/in/basic/only_header.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/only_header.entry.csv",
+    "description": "[エッジケース] entryファイルがヘッダーだけの場合に正常に出力できる"
+  },
+
+  {
+    "input": "test/in/basic/pre_10.entry.csv test/in/basic/only_header.score.csv",
+    "output": "out/basic/only_header.score.csv",
+    "description": "[エッジケース] scoreファイルがヘッダーだけの場合に正常に出力できる"
+  },
+  {
+    "input": "test/in/basic/pre_10.entry.csv",
+    "output": {
+      "type": "error"
+    },
+    "description": "[異常系] 引数の数が不正なときにはエラーとする"
+  },
+  {
+    "input": "test/in/basic/hoge.csv test/in/basic/test.score.csv",
+    "output": {
+      "type": "error"
+    },
+    "description": "[異常系] 指定されたentryファイルが存在しないときにはエラーとする"
+  },
+  {
+    "input": "test/in/basic/pre_10.entry.csv test/in/basic/fuga.score.csv",
+    "output": {
+      "type": "error"
+    },
+    "description": "[異常系] 指定されたscoreファイルが存在しないときにはエラーとする"
+  }
+]
