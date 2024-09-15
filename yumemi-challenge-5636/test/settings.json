@@ -1,0 +1,16 @@
+{
+    "input": {
+      "type": "arguments",
+      "source": "raw"
+    },
+    "output": {
+      "type": "stdout",
+      "source": "file"
+    },
+    "limitations": {
+      "maxLines" : 250,
+      "maxCharacters" : 300
+    },
+    "timeout": 3000,
+    "baseDirectory": "test"
+}

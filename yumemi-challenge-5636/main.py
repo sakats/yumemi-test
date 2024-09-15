@@ -230,12 +230,13 @@ def main(entry_log_path: str, score_log_path: str):
 
 if __name__ == "__main__":
     # 引数の数が要件と一致しない場合はエラー出力
-    EXPECTED_ARG_COUNT = 3
+    EXPECTED_ARG_COUNT = 4
     if len(sys.argv) != EXPECTED_ARG_COUNT:
         print("入力引数の数が不正です。", file=sys.stderr)
         sys.exit(1)
 
-    entry_log_path = sys.argv[1]
-    score_log_path = sys.argv[2]
+    aggregate_mode = sys.argv[1]
+    entry_log_path = sys.argv[2]
+    score_log_path = sys.argv[3]
 
-    main(entry_log_path, score_log_path)
+    main(aggregate_mode,entry_log_path, score_log_path)

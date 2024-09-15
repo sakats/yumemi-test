@@ -1,0 +1,74 @@
+[
+  {
+    "input": "highscore test/in/basic/pre_100.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/pre_100-unique_10.highscore.csv",
+    "description": "[正常系 highscore] entryで全て事前登録あり、重複順位なしを出力できる"
+  },
+  {
+    "input": "average test/in/basic/pre_100.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/pre_100-unique_10.average.csv",
+    "description": "[正常系 average] entryで全て事前登録あり、重複順位なしを出力できる"
+  },
+  {
+    "input": "highscore test/in/basic/pre_100_update.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/pre_100_update-unique_10.highscore.csv",
+    "description": "[正常系 highscore] 更新されたハンドルネームで10件表示される entry日時でのソートあり"
+  },
+  {
+    "input": "average test/in/basic/pre_100_update.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/pre_100_update-unique_10.average.csv",
+    "description": "[正常系 average] 規定回数に到達していない行は表示されない"
+  },
+  {
+    "input": "highscore test/in/basic/test.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/unique_10.highscore.csv",
+    "description": "[正常系 highscore] entryの重複あり、重複順位なしの場合に正常に出力できる"
+  },
+  {
+    "input": "average test/in/basic/test.entry.csv test/in/basic/unique_10.score.csv",
+    "output": "out/basic/unique_10.average.csv",
+    "description": "[正常系 average] 規定回数に到達していない行は表示されない"
+  },
+  {
+    "input": "highscore test/in/basic/pre_100.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/pre_100-test.highscore.csv",
+    "description": "[正常系 highscore] entryで全て事前登録あり、重複順位あり、規定回数到達ありの場合に10件を超えて正常に出力できる"
+  },
+  {
+    "input": "average test/in/basic/pre_100.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/pre_100-test.average.csv",
+    "description": "[正常系 average] entryで全て事前登録あり、重複順位あり、規定回数到達ありの場合に10件を超えて正常に出力できる"
+  },
+  {
+    "input": "highscore test/in/basic/test.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/test.highscore.csv",
+    "description": "[正常系 highscore] entryの重複あり、重複順位あり、規定回数到達ありの場合に正常に出力できる entry日時でのソートあり"
+  },
+  {
+    "input": "average test/in/basic/test.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/test.average.csv",
+    "description": "[正常系 average] entryの重複あり、重複順位あり、規定回数到達ありの場合に正常に出力できる"
+  },
+  {
+    "input": "highscore test/in/basic/only_header.entry.csv test/in/basic/test.score.csv",
+    "output": "out/basic/only_header.entry.csv",
+    "description": "[エッジケース highscore] entryファイルがヘッダーだけの場合に正常に出力できる"
+  },
+  {
+    "input": "highscore test/in/basic/test.entry.csv test/in/basic/only_header.score.csv",
+    "output": "out/basic/only_header.score.csv",
+    "description": "[エッジケース highscore] scoreファイルがヘッダーだけの場合に正常に出力できる"
+  },
+  {
+    "input": "average test/in/basic/test.entry.csv test/in/basic/only_header.score.csv",
+    "output": "out/basic/only_header.score.csv",
+    "description": "[エッジケース average] scoreファイルがヘッダーだけの場合に正常に出力できる"
+  },
+  {
+    "input": "highscore",
+    "output": {
+      "type": "error"
+    },
+    "description": "[異常系] 引数の数が不正なときにはエラーになる"
+  }
+]
