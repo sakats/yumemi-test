@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+from datetime import datetime
 from typing import List, Dict
 
 
@@ -14,11 +15,24 @@ def validate_entry_log(entry_log_path: str, entry_log_header: str) -> bool:
     Returns:
         bool: 照合結果
     """
-        # 入力ファイルの存在確認
+    # 入力ファイルの存在確認
     if not os.path.exists(entry_log_path):
         print("ゲームのエントリーファイルが存在しません。", file=sys.stderr)
         return False
-    
+
+    # ヘッダー確認と要素数の確認
+    with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
+        csv_reader = csv.reader(entry_file)
+        headers = next(csv_reader)
+        if headers != entry_log_header.split(","):
+            print("ヘッダーが正しくありません。", file=sys.stderr)
+            return False
+
+        for row in csv_reader:
+            if len(row) != len(headers):
+                print("要素数が正しくありません。", file=sys.stderr)
+                return False
+
     return True
 
 
@@ -32,11 +46,33 @@ def validate_score_log(score_log_path: str, score_log_header: str) -> bool:
     Returns:
         bool: 照合結果
     """
-        # 入力ファイルの存在確認
+    # 入力ファイルの存在確認
     if not os.path.exists(score_log_path):
         print("ゲームのプレイログファイルが存在しません。", file=sys.stderr)
         return False
-    
+
+    # ヘッダー確認と要素数の確認
+    with open(score_log_path, mode="r", encoding="utf-8") as score_file:
+        csv_reader = csv.reader(score_file)
+        headers = next(csv_reader)
+        if headers != score_log_header.split(","):
+            print("ヘッダーが正しくありません。", file=sys.stderr)
+            return False
+
+        for row in csv_reader:
+            if len(row) != len(headers):
+                print("要素数が正しくありません。", file=sys.stderr)
+                return False
+            
+            #タイムスタンプが正しいか確認
+            create_timestamp = row[0]
+            try:
+                datetime.strptime(create_timestamp, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                print(f"不正なタイムスタンプ{create_timestamp}が含まれています。", file=sys.stderr)
+                return False
+
+
     return True
 
 
@@ -54,14 +90,14 @@ def generate_entry_data(entry_log_path: str) -> Dict[str, str]:
     # エントリーファイルを開く
     with open(entry_log_path, mode="r", encoding="utf-8") as entry_file:
         csv_reader = csv.reader(entry_file)
-        next(csv_reader) # ヘッダーをスキップ
+        next(csv_reader)  # ヘッダーをスキップ
 
         # 各行を辞書に格納
         for row in csv_reader:
             player_id = row[0]
             handle_name = row[1]
             entry_data[player_id] = handle_name
-    
+
     return entry_data
 
 
@@ -93,7 +129,10 @@ def generate_score_data(
                 continue
 
             # 既にスコアがあれば比較･更新し、無ければ追加する。
-            if player_id not in score_data.keys() or game_score > score_data[player_id][1]:
+            if (
+                player_id not in score_data.keys()
+                or game_score > score_data[player_id][1]
+            ):
                 score_data[player_id] = [create_timestamp, game_score]
 
     return score_data
@@ -108,11 +147,13 @@ def sort_score_data(score_data: Dict[str, List[str]]) -> Dict[str, List[str]]:
     Returns:
         Dict[str,List[str]]: ソート後のスコアリスト
     """
-    return dict(sorted(score_data.items(), key=lambda item: (-int(item[1][1]), item[0])))
+    return dict(
+        sorted(score_data.items(), key=lambda item: (-int(item[1][1]), item[0]))
+    )
 
 
 def extract_ranking_data(
-entry_data: Dict[str, str], score_data: Dict[str, List[str]], ranking_threshold: int
+    entry_data: Dict[str, str], score_data: Dict[str, List[str]], ranking_threshold: int
 ) -> List[List[str]]:
     """ランキングデータの配列を作成する
 
@@ -124,9 +165,9 @@ entry_data: Dict[str, str], score_data: Dict[str, List[str]], ranking_threshold:
         Dict[str,List[str]]: ランキングデータ
     """
     ranking_data = []
-    ranking_data_header = "rank,player_id,handle_name,score"
     rank = 0
     previous_score = None
+    ranking_data_header = "rank,player_id,handle_name,score"
 
     # ヘッダーを追加
     ranking_data.append(ranking_data_header.split(","))
@@ -156,7 +197,7 @@ def output_ranking_data(ranking_data: Dict[str, List[str]]):
         ranking_data (Dict[str,List[str]]): ランキングデータ
     """
     for data in ranking_data:
-        print(','.join(map(str, data)))
+        print(",".join(map(str, data)))
 
 
 def main(entry_log_path: str, score_log_path: str):
@@ -177,7 +218,8 @@ def main(entry_log_path: str, score_log_path: str):
 
 if __name__ == "__main__":
     # 引数の数が要件と一致しない場合はエラー出力
-    if len(sys.argv) != 3:
+    EXPECTED_ARG_COUNT = 3
+    if len(sys.argv) != EXPECTED_ARG_COUNT:
         print("入力引数の数が不正です。", file=sys.stderr)
         sys.exit(1)
 
