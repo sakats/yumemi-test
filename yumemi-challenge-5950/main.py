@@ -95,7 +95,6 @@ def generate_score_data(
             # 既にスコアがあれば比較･更新し、無ければ追加する。
             if player_id not in score_data.keys() or game_score > score_data[player_id][1]:
                 score_data[player_id] = [create_timestamp, game_score]
-                break
 
     return score_data
 
